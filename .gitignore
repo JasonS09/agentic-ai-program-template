@@ -1,0 +1,170 @@
+# ------------------------------
+# Core Python
+# ------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# ------------------------------
+# Packaging / Distribution
+# ------------------------------
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ------------------------------
+# Virtual Environments
+# ------------------------------
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Poetry / Pipenv / Hatch (adjust if you want to commit lock files)
+.poetry/
+# Pipenv artifacts (keep Pipfile + Pipfile.lock if desired)
+#Pipfile.lock
+
+# ------------------------------
+# Installer / Build Logs
+# ------------------------------
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ------------------------------
+# Test / Coverage / QA
+# ------------------------------
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# ------------------------------
+# Jupyter / IPython
+# ------------------------------
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# ------------------------------
+# Cython
+# ------------------------------
+cython_debug/
+
+# ------------------------------
+# Editor / IDE
+# ------------------------------
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+*.swp
+*.swo
+
+# ------------------------------
+# OS / UI
+# ------------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------------
+# Logs / Runtime / PID
+# ------------------------------
+logs/
+*.log
+*.pid
+
+# ------------------------------
+# Environment / Secrets
+# ------------------------------
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+*.der
+*.pfx
+
+# ------------------------------
+# Data / Artifacts (Keep what you need)
+# ------------------------------
+# Comment out folders you intend to version.
+data/
+datasets/
+.tmp/
+tmp/
+temp/
+outputs/
+artifacts/
+wandb/
+mlruns/
+
+# ------------------------------
+# Caches
+# ------------------------------
+.cache/
+**/__pycache__/
+
+# ------------------------------
+# SQLite / Local DB
+# ------------------------------
+*.sqlite3
+*.db
+
+# ------------------------------
+# MCP / Agent-specific (adjust as needed)
+# ------------------------------
+.mcp/
+
+# ------------------------------
+# Node / JS (if you add frontend bits later)
+# ------------------------------
+node_modules/
+*.tsbuildinfo
+
+# ------------------------------
+# Misc
+# ------------------------------
+*.bak
+*.orig
+*.rej
+*.tmp
+*.temp
