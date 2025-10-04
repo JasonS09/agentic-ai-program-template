@@ -74,7 +74,7 @@ def query_anthropic(prompt, model="claude-3-haiku-20240307"):
     except Exception as e:
         return f"Error querying Anthropic: {e}"
 
-def query_gemini(prompt, model="gemini-pro"):
+def query_gemini(prompt, model="gemini-2.5-pro"):
     """Sends a prompt to the Google Gemini API."""
     print(f"\n--- Querying Gemini ({model}) ---")
     if not GEMINI_API_KEY:
@@ -87,9 +87,11 @@ def query_gemini(prompt, model="gemini-pro"):
         return f"Error querying Gemini: {e}"
 
 DEFAULT_PROMPTS = {
-    "Simple": "Explain photosynthesis.",
-    "Role": "You are a biology professor. Explain photosynthesis to a high school student.",
-    "Chain-of-Thought": """Explain photosynthesis step-by-step, start with inputs (what plants need) and end with outputs.""",
+    "Few-Shot": "Create an elvish word inspired by Tolkien's works. The word must be followed its meaning between parenthesis (). Here are some examples:\n- Adanedhel (elf-man)\n- Balrog (demon of might)\n- Draug (wolf)\nNow you try:",
+    "Role": "You are a personal trainer. Create a 5-day workout plan for a beginner looking to build muscle. 165cm, 60kg, 27 years old.",
+    "Chain-of-Thought": """Order the following three words by their length, from shortest to longest: cat, elephant, mouse. Think step-by-step.""",
+    "Structured Output": "List five countries in Europe along with their capitals in JSON format. Example: {\"country\": \"France\", \"capital\": \"Paris\"}",
+    "Negative Prompting": "List five common mistakes people make when learning to code, but do not include any positive tips or advice."
 }
 
 

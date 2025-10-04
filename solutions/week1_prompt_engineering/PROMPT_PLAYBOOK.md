@@ -21,6 +21,27 @@ hallucination, verbosity, shallow, drift (format), persona-loss, json-break, con
 ## Results Table (Populate During Lab)
 | Prompt Pattern | Example Used | Model | Adherence (1–5) | Reasoning (1–5) | Style (1–5) | Format (1–5) | Failure Modes | Notes | Reuse? (Y/N) |
 |----------------|--------------|-------|------------------|-----------------|-------------|--------------|---------------|-------|--------------|
+| Few-Shot | Elvish word creation | llama3 | 4 | 4 | 5 | 4 | verbosity | Added lore beyond prompt; creative but exceeded scope. | N |
+| Few-Shot | Elvish word creation | mistral | 3 | — | 4 | 3 | verbosity, format | Gave multiple words instead of one; partially adhered. | N |
+| Few-Shot | Elvish word creation | gpt-3.5 | 5 | — | 5 | 5 | — | Perfect single example, concise. | N |
+| Few-Shot | Elvish word creation | gemini-pro | 5 | — | 5 | 5 | — | Simple and correct, balanced brevity. | N |
+| Role | Personal trainer 5-day plan | llama3 | 5 | — | 5 | 5 | — | Comprehensive, persona-consistent and detailed. | N |
+| Role | Personal trainer 5-day plan | mistral | 5 | — | 4 | 5 | — | Clear persona; reasonable plan, fewer details. | N |
+| Role | Personal trainer 5-day plan | gpt-3.5 | 5 | — | 3 | 5 | — | Accurate, compact. | N |
+| Role | Personal trainer 5-day plan | gemini-pro | 5 | 5 | 5 | 5 | verbosity | Long but highly contextual and motivational. | N |
+| Chain-of-Thought | Order words by length | llama3 | 4 | 3 | 4 | 5 | shallow, hallucination | Miscounted “mouse” letters (3 vs. 5); reasoning slight flaw. | N |
+| Chain-of-Thought | Order words by length | mistral | 5 | 5 | 5 | 5 | — | Correct reasoning, clear step-by-step. | N |
+| Chain-of-Thought | Order words by length | gpt-3.5 | 5 | 4 | 4 | 5 | shallow | Correct but minimal reasoning. | N |
+| Chain-of-Thought | Order words by length | gemini-pro | 5 | 5 | 5 | 5 | — | Clear, thorough step explanation. | N |
+| Structured Output | Countries & capitals JSON | llama3 | 5 | — | 4 | 5 | — | Correct JSON; clean output. | N |
+| Structured Output | Countries & capitals JSON | mistral | 5 | — | 5 | 5 | — | Valid JSON, consistent order. | N |
+| Structured Output | Countries & capitals JSON | gpt-3.5 | 5 | — | 5 | 5 | — | Correct JSON, concise. | N |
+| Structured Output | Countries & capitals JSON | gemini-pro | 5 | — | 5 | 5 | — | Correct JSON. | N |
+| Negative Prompting | Mistakes when learning to code | llama3 | 5 | — | 4 | 5 | verbosity | Followed “no positive tips” rule; slightly long. | N |
+| Negative Prompting | Mistakes when learning to code | mistral | 5 | — | 4 | 5 | verbosity | Clean list, no positivity creep. | N |
+| Negative Prompting | Mistakes when learning to code | gpt-3.5 | 5 | — | 3 | 5 | — | Concise and compliant. Missing end dots. | N |
+| Negative Prompting | Mistakes when learning to code | gemini-pro | 5 | — | 4 | 5 | — | Perfectly compliant, varied phrasing. | N |
+
 
 ## Model Summary (After Initial Pass)
 | Capability | Best Model(s) | Evidence Snippet | Notes |
