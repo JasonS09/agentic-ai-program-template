@@ -45,16 +45,16 @@ hallucination, verbosity, shallow, drift (format), persona-loss, json-break, con
 
 ## Model Summary (After Initial Pass)
 | Capability | Best Model(s) | Evidence Snippet | Notes |
-|------------|---------------|------------------|-------|
-| Explanatory Clarity | | | |
-| Chain-of-Thought | | | |
-| JSON Adherence | | | |
-| Persona Control | | | |
-| Instruction Strictness | | | |
+|-------------|----------------|------------------|-------|
+| **Explanatory Clarity** | **Gemini Pro, GPT-3.5** | “Therefore, the final order… cat, mouse, elephant.” | Clear, natural reasoning without over-explaining. |
+| **Chain-of-Thought** | **Gemini Pro, Mistral** | Both provided full step-by-step enumeration with correct logic. | Gemini slightly more didactic. |
+| **JSON Adherence** | **GPT-3.5, Gemini Pro, Mistral** | All produced perfectly parsable JSON arrays. | No format drift or syntax errors. |
+| **Persona Control** | **Gemini Pro, Llama3** | “As your personal trainer, I’ve designed…” | Maintained role and motivational tone. |
+| **Instruction Strictness** | **GPT-3.5** | Consistently followed every rule precisely (no extra fluff). | Most literal adherence overall. |
 
 ## Insight Log
 Record notable surprises, regressions, or improvements.
-- Day 1:
+- Day 1: Llama3 often over-explains or embellishes creatively; good for flavor, weaker for constraint-following.
 - Day 2:
 - Day 3:
 
@@ -91,8 +91,11 @@ Record notable surprises, regressions, or improvements.
 ## Reflection (End of Week)
 Answer briefly:
 1. Which two prompt patterns yielded the largest delta between models?
+    Few-shot prompt.
 2. Which failure mode was most frequent? Root cause?
+    Verbosity. Some models tend to over-explain their outputs.
 3. Default model choice for: explanation / reasoning / structure.
+    Gemini Pro.
 4. Open questions heading into Week 2.
 *   **Ambiguity:**
     *   Avoid vague or open-ended questions. Be as specific as possible.
