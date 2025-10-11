@@ -1,6 +1,7 @@
 import requests
 import json
 import chromadb
+import argparse  # <-- Added for CLI argument parsing
 
 # --- 1. Configuration ---
 OLLAMA_ENDPOINT = "http://localhost:11434/api"
@@ -64,36 +65,60 @@ def index_knowledge_base():
             )
     print("Indexing complete.")
 
-def query_rag_agent(user_query):
+def query_rag_agent(user_query, k, use_context=True):
     """
     Queries the RAG agent with a user's question.
+    If use_context is False, skips retrieval and only uses the user query.
+    Appends a citation list at the end of the answer if context is used.
     """
     print(f"\n--- Querying for: '{user_query}' ---")
     
-    # 1. Get embedding for the user query
-    query_embedding = get_embedding(user_query)
-    if not query_embedding:
-        return "Sorry, I couldn't process your query."
+    retrieved_context = ""
+    citations = []
+    if use_context:
+        # 1. Get embedding for the user query
+        query_embedding = get_embedding(user_query)
+        if not query_embedding:
+            return "Sorry, I couldn't process your query."
 
-    # 2. Query ChromaDB for relevant context
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=2  # Retrieve the top 2 most relevant documents
-    )
-    
-    retrieved_context = "\n".join(results['documents'][0]) if results['documents'] else "No relevant information found."
-    
-    print(f"Retrieved context: {retrieved_context}")
+        # 2. Query ChromaDB for relevant context
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=k
+        )
+        if results['documents']:
+            context_blocks = []
+            for i, doc in enumerate(results['documents'][0]):
+                context_blocks.append(f"---CONTEXT BLOCK {i+1}---\n{doc}")
+            retrieved_context = "\n".join(context_blocks)
+            # Collect citations from metadata if available
+            if 'metadatas' in results and results['metadatas']:
+                for i, meta in enumerate(results['metadatas'][0]):
+                    question = meta.get('question', 'Unknown source')
+                    citations.append(f"[{i+1}] {question}")
+        else:
+            retrieved_context = "No relevant information found."
+        print(f"Retrieved context: {retrieved_context}")
+    else:
+        print("Skipping context retrieval (--no-context enabled).")
 
     # 3. Construct the prompt for the LLM
     prompt = f"""
     You are a helpful FAQ assistant. A user has asked the following question:
     '{user_query}'
+    """
+    if use_context:
+        prompt += f"""
 
     Here is some context that might be relevant:
-    '{retrieved_context}'
+    {retrieved_context}
 
     Based on this context, please provide a clear and concise answer. If the context is not relevant, say so.
+    """
+    else:
+        prompt += """
+
+    Please provide a clear and concise answer based only on your general knowledge. If you are unsure, say so.
     """
 
     # 4. Send the prompt to the LLM
@@ -103,27 +128,38 @@ def query_rag_agent(user_query):
             json={"prompt": prompt, **OLLAMA_CONFIG}
         )
         response.raise_for_status()
-        return json.loads(response.text)["response"]
+        answer = json.loads(response.text)["response"]
+        # Append citation list if context was used and citations exist
+        if use_context and citations:
+            answer += "\n\nCitations:\n" + "\n".join(citations)
+        return answer
     except requests.exceptions.RequestException as e:
         return f"Error communicating with the model: {e}"
 
 # --- 5. Main Execution ---
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="RAG FAQ Agent")
+    parser.add_argument("--k", type=int, default=2, help="Number of results to retrieve from ChromaDB")
+    parser.add_argument("--no-context", action="store_true", help="Generate answer without retrieving context from ChromaDB")
+    args = parser.parse_args()
+    k = args.k
+    use_context = not args.no_context
+
     # Check if the collection is empty before indexing
-    if collection.count() == 0:
+    if collection.count() == 0 and use_context:
         index_knowledge_base()
-    else:
+    elif use_context:
         print("Knowledge base is already indexed.")
 
     # --- Test Queries ---
     test_queries = [
-        "How can I return a product?",
+        #"How can I return a product?",
         "What's the process for tracking my package?",
-        "Do you ship to Canada?",
-        "What are the support hours?",
-        "Can I pay with Bitcoin?" # A question not in the knowledge base
+        #"Do you ship to Canada?",
+        #"What are the support hours?",
+        #"Can I pay with Bitcoin?" # A question not in the knowledge base
     ]
 
     for query in test_queries:
-        answer = query_rag_agent(query)
+        answer = query_rag_agent(query, k, use_context=use_context)
         print(f"Answer: {answer}")
