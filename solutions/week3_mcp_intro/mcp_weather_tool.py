@@ -57,16 +57,24 @@ class WeatherHandler(BaseHTTPRequestHandler):
         if self.path.startswith("/weather"):
             # naive query parsing: /weather?city=Paris
             try:
+                # Print incoming request info
+                print(f"[mcp-weather] Incoming request: path={self.path} remote={self.client_address}")
                 query = self.path.split("?", 1)[1] if "?" in self.path else ""
                 params = dict(p.split("=", 1) for p in query.split("&") if p)
+                print(f"[mcp-weather] Parsed params: {params}")
                 city = params.get("city")
                 data = invoke_get_weather(city)
                 self._send_json(200, data)
             except Exception as e:  # pylint: disable=broad-except
+                # Print error before responding
+                print(f"[mcp-weather] Error handling /weather: {e}")
                 self._send_json(400, {"error": str(e)})
         elif self.path == "/descriptor":
+            # Print descriptor request
+            print(f"[mcp-weather] Descriptor requested from {self.client_address}")
             self._send_json(200, TOOL_DESCRIPTOR)
         else:
+            print(f"[mcp-weather] Unknown path requested: {self.path} from {self.client_address}")
             self._send_json(404, {"error": "Not Found"})
 
     def log_message(self, fmt, *args):  # noqa: D401
@@ -79,6 +87,8 @@ class WeatherHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+        # Print the response that was sent for observability
+        print(f"[mcp-weather] Sent HTTP {code} response to {self.client_address}: {json.dumps(payload)}")
 
 
 def serve(port: int):

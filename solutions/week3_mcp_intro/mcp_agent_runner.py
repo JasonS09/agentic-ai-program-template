@@ -16,11 +16,12 @@ import re
 import time
 from dataclasses import dataclass, asdict
 from typing import Optional, Dict, Any
+import requests
 
-try:
-    from mcp_weather_tool import invoke_get_weather, TOOL_DESCRIPTOR  # type: ignore
-except ImportError:  # pragma: no cover
-    raise SystemExit("Run from project root so Python can resolve mcp_weather_tool.")
+from mcp_weather_tool import invoke_get_weather, TOOL_DESCRIPTOR  # type: ignore
+
+OLLAMA_ENDPOINT = "http://localhost:11434/api"
+OLLAMA_CONFIG = {"model": "llama3", "stream": False}
 
 WEATHER_PATTERN = re.compile(r"weather (?:in|at|for) (?P<city>[A-Za-z\-\s]+)\??", re.IGNORECASE)
 
@@ -55,10 +56,38 @@ def answer_without_tool(query: str) -> str:
 
 
 def build_answer_with_tool(query: str, weather: Dict[str, Any]) -> str:
-    return (
-        f"Weather for {weather['city']}: {weather['temp_c']}°C, {weather['conditions']}. "
-        f"(Source: {weather['source']})."
+    prompt = (
+        f"User question: \"{query}\"\n\n"
+        f"The tool returned:\n{weather}\n\n"
+        "Using ONLY the tool output and the question, write a concise, non-speculative answer. "
+        "Include a short source citation in parentheses, e.g. (Source: mock-weather-service)."
     )
+    return call_ollama(prompt)
+
+
+def call_ollama(prompt: str) -> str:
+    """Send a prompt to Ollama generate endpoint and return the model text."""
+    try:
+        resp = requests.post(f"{OLLAMA_ENDPOINT}/generate", json={"prompt": prompt, **OLLAMA_CONFIG})
+        resp.raise_for_status()
+        # Ollama payload shape in this repo examples: JSON with "response" field
+        data = resp.json() if resp.headers.get("Content-Type", "").startswith("application/json") else json.loads(resp.text)
+        return data.get("response", "") if isinstance(data, dict) else str(data)
+    except Exception as e:
+        return f"__OLLAMA_ERROR__ {e}"
+
+def answer_without_tool(query: str, tool_output: Optional[Dict[str, Any]]) -> str:
+    """
+    Ask the LLM to produce the final answer given the user query and (optional) tool output.
+    """
+    context = json.dumps(tool_output, indent=2)
+    prompt = (
+        f"User question: \"{query}\"\n\n"
+        f"The tool returned:\n{context}\n\n"
+        "Using ONLY the tool output and the question, write a concise, non-speculative answer. "
+        "Include a short source citation in parentheses, e.g. (Source: mock-weather-service)."
+    )
+    return call_ollama(prompt)
 
 
 def run_agent(query: str) -> InvocationLog:
